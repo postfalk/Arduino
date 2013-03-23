@@ -1,49 +1,90 @@
-/*
-  Analog Input
- Demonstrates analog input by reading an analog sensor on analog pin 0 and
- turning on and off a light emitting diode(LED)  connected to digital pin 13. 
- The amount of time the LED will be on and off depends on
- the value obtained by analogRead(). 
+//Sample using LiquidCrystal library
+#include <LiquidCrystal.h>
  
- The circuit:
- * Potentiometer attached to analog input 0
- * center pin of the potentiometer to the analog pin
- * one side pin (either one) to ground
- * the other side pin to +5V
- * LED anode (long leg) attached to digital output 13
- * LED cathode (short leg) attached to ground
+/*******************************************************
  
- * Note: because most Arduinos have a built-in LED attached 
- to pin 13 on the board, the LED is optional.
+This program will test the LCD panel and the buttons
+Mark Bramwell, July 2010
  
+********************************************************/
  
- Created by David Cuartielles
- modified 30 Aug 2011
- By Tom Igoe
+// select the pins used on the LCD panel
+LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
  
- This example code is in the public domain.
+// define some values used by the panel and buttons
+int lcd_key     = 0;
+int adc_key_in  = 0;
+#define btnRIGHT  0
+#define btnUP     1
+#define btnDOWN   2
+#define btnLEFT   3
+#define btnSELECT 4
+#define btnNONE   5
  
- http://arduino.cc/en/Tutorial/AnalogInput
+void setup()
+{
+ lcd.begin(16, 2);              // start the library
+ lcd.setCursor(0,0);
+ lcd.print("temperature"); 
+ lcd.setCursor(6,1);
+ lcd.print("celsius   ");
+ //analogReference(EXTERNAL);
+}
  
- */
+// read the buttons
+int read_LCD_buttons()
+{
+ adc_key_in = analogRead(0);      // read the value from the sensor
+ // my buttons when read are centered at these valies: 0, 144, 329, 504, 741
+ // we add approx 50 to those values and check to see if we are close
+ if (adc_key_in > 1000) return btnNONE; // We make this the 1st option for speed reasons since it will be the most likely result
+ if (adc_key_in < 50)   return btnRIGHT; 
+ if (adc_key_in < 195)  return btnUP;
+ if (adc_key_in < 380)  return btnDOWN;
+ if (adc_key_in < 555)  return btnLEFT;
+ if (adc_key_in < 790)  return btnSELECT;  
+ return btnNONE;  // when all others fail, return this...
+}
+ 
 
 int sensorPin = A1;    // select the input pin for the potentiometer
-int sensorValue = 0;  // variable to store the value coming from the sensor
-
-void setup() {
-  // declare the ledPin as an OUTPUT:  
-  Serial.begin(9600);
-}
+float sensorValue = 0;  // variable to store the value coming from the sensor
+float realValue;
+boolean fahrenheit = false;
+int run = 1;
 
 void loop() {
+  run = run + 1;
   // read the value from the sensor:
-  sensorValue = analogRead(sensorPin);
-    Serial.println(sensorValue); // turn the ledPin on
-  //digitalWrite(ledPin, HIGH);  
-  // stop the program for <sensorValue> milliseconds:
-  //delay(sensorValue);          
-  // turn the ledPin off:        
-  //digitalWrite(ledPin, LOW);   
-  // stop the program for for <sensorValue> milliseconds:
-  delay(10);                  
+  sensorValue = analogRead(sensorPin)
+  if (run % 10 == 0)
+  {  
+    realValue = (sensorValue*5/1024-.5)*100;
+    if (fahrenheit) {
+      realValue = realValue * 9/5 + 32;
+    }
+    lcd.setCursor(0,1);
+    lcd.print(realValue);
+  }
+  
+  lcd_key = read_LCD_buttons();  // read the buttons
+ 
+  switch (lcd_key)
+  {
+    case btnUP:
+    {
+      fahrenheit = true;
+      lcd.setCursor(6,1);
+      lcd.print("fahrenheit");
+      break;
+    }
+    case btnDOWN:
+    {
+      fahrenheit = false;
+      lcd.setCursor(6,1);
+      lcd.print("celsius   ");
+      break;
+    }
+  }
+  delay(50);                  
 }
