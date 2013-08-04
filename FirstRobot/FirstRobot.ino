@@ -51,9 +51,9 @@ void loop() {
   delay(10);
   motor1.setSpeed(i);
   motor2.setSpeed(i);  
-      // Serial.println(sensor01_state);
-    // Serial.println(sensor02_state);
-  }  
+   Serial.println(sensor01_state);
+   Serial.println(sensor02_state);
+}  
 //   motor1.run(FORWARD);
 //   motor2.run(FORWARD);
 //  for (i=0; i<255; i++) {  
