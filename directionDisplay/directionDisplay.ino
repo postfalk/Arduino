@@ -25,10 +25,16 @@
 
 Adafruit_8x8matrix matrix = Adafruit_8x8matrix();
 
+const int pinLeftSensor = A0;
+const int pinRightSensor = A1;
+const int pinIRDetector = A2;
+const int pinIREmitter = A3;
+
 void setup() {
   Serial.begin(9600);
   Serial.println("8x8 LED Matrix Test");
   matrix.begin(0x70);  // pass in the address
+  pinMode(pinIREmitter, OUTPUT); 
 }
 
 void left() {
@@ -47,8 +53,7 @@ void noSignal() {
    matrix.drawRect(2, 2, 4, 4, LED_ON);
 }
 
-const int pinLeftSensor = A0;
-const int pinRightSensor = A1;
+
 const int delta = 50;
 const int noiseLevel = 10;
 
@@ -110,9 +115,23 @@ const boolean useSensor = true;
 void loop() {  
   int leftSensorValue = analogRead(pinLeftSensor);
   int rightSensorValue = analogRead(pinRightSensor);
-  Serial.print("left ");
-  Serial.println(leftSensorValue);
-  Serial.print("right ");
-  Serial.println(rightSensorValue);
-  useSensor ? render(detectDirection(leftSensorValue, rightSensorValue)) : simulate();
+  int IRDetectorValue = analogRead(pinIRDetector);
+  
+  boolean emitterEnabled = true;
+  
+  digitalWrite(pinIREmitter, emitterEnabled ? HIGH : LOW);
+  Serial.print("emitter [");
+  Serial.print(digitalRead(pinIREmitter));
+  Serial.println("]");
+  
+  Serial.print("left [");
+  Serial.print(leftSensorValue);
+  Serial.println("]");
+  Serial.print("right [");
+  Serial.print(rightSensorValue);
+  Serial.println("]");
+  Serial.print("IR detector [");
+  Serial.print(IRDetectorValue);
+  Serial.println("]");
+  useSensor ? render(detectDirection(leftSensorValue, IRDetectorValue)) : simulate();
 }
