@@ -41,7 +41,7 @@ void loop() {
   for (int8_t x=0; x>=-100; x--) {
     matrix.clear();
     matrix.setCursor(x,0);
-    matrix.print("Ich liebe Cynthia");
+    matrix.print("Good Morning GIF");
     matrix.writeDisplay();
     delay(100);
   }

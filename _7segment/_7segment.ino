@@ -1,15 +1,20 @@
-// see http://playground.arduino.cc//Code/SimpleTimer#GetTheCode
-#include <SimpleTimer.h>
+// see http://arduinomega.blogspot.com/p/arduino-code.html
+
+// apt-get install avr-libc and avr-gcc to 
+// make them available
+
+# include <avr/interrupt.h>
+# include <avr/io.h>
 
 int display_value = 5;
 
 // the timer object
-SimpleTimer timer;
+// SimpleTimer timer;
 
 // a function to be executed periodically
-void repeatMe() {
-  write_number(display_value);
-}
+// void repeatMe() {
+//  write_number(display_value);
+//}
 
 void setup() {                
   // initialize the digital pin as an output.
@@ -19,7 +24,7 @@ void setup() {
   pinMode(10, OUTPUT);
   Serial.begin(9600);
   
-  timer.setInterval(1, repeatMe);
+  // timer.setInterval(1, repeatMe);
 }
 
 void write(byte in) {
@@ -45,16 +50,16 @@ void write_number(int in) {
   dataArray[7] = B01100011; // 7 dec 1101 0011 bin
   dataArray[8] = B00000000; // 8 dec 0001 0000 bin
   dataArray[9] = B01000000; // 9 dec 1000 0000 bin
-  write(dataArray[in]);
+  write(dataArray[in]+B10000000);
 }
 
 
 void loop() {
-  timer.run();
   int sum = 1;
   for(int i = 0; i < 10; i++) {
   //   sum = sum + sum;
-    display_value = i;   // wait for a second
-    delay(100)
+    display_value = i;
+    write_number(i);
+    delay(1000);
   }
 }
